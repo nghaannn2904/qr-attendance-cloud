@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: `http://${window.location.hostname}:3000/api`,
+    baseURL: "http://13.213.16.42:3000/api",
     timeout: 10000,
 });
-
 api.interceptors.response.use(
 
     (response) => response,
