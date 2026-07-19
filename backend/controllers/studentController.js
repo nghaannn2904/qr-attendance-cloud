@@ -69,4 +69,180 @@ exports.delete = (req, res) => {
 
     });
 
+}; exports.getClasses = (req, res) => {
+
+
+    const studentId = req.user.id;
+
+
+
+    Student.getClassesByStudent(
+
+        studentId,
+
+        (err, result) => {
+
+
+            if (err) {
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message: err.message
+
+                });
+
+            }
+
+
+
+            res.json(result);
+
+
+        }
+
+    );
+
+
+};
+exports.searchStudent = (req, res) => {
+
+    const studentCode = req.params.studentCode;
+
+    Student.findByCode(studentCode, (err, result) => {
+
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        }
+
+        if (result.length === 0) {
+
+            return res.json({
+                success: false,
+                message: "Không tìm thấy sinh viên."
+            });
+
+        }
+
+        res.json({
+            success: true,
+            student: result[0]
+        });
+
+    });
+
+};
+// =========================
+// CHI TIẾT LỚP
+// =========================
+
+exports.getClassDetail = (req, res) => {
+
+
+    const studentId = req.user.id;
+
+    const classId = req.params.id;
+
+
+
+    Student.getClassDetail(
+
+        studentId,
+
+        classId,
+
+        (err, result) => {
+
+
+            if (err) {
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message: err.message
+
+                });
+
+            }
+
+
+
+            res.json(result[0]);
+
+
+        }
+
+    );
+
+
+};
+
+
+
+
+
+
+
+// =========================
+// LỊCH SỬ ĐIỂM DANH
+// =========================
+
+
+exports.getAttendanceHistory = (req,res)=>{
+
+
+    const studentId = req.user.id;
+    const classId = req.params.id;
+
+
+    console.log("studentId:", studentId);
+    console.log("classId:", classId);
+
+
+    Student.getAttendanceHistory(
+
+        studentId,
+
+        classId,
+
+        (err,result)=>{
+
+
+            if(err){
+
+                console.log("SQL ERROR:", err);
+
+                return res.status(500).json({
+
+                    success:false,
+
+                    message:err.message
+
+                });
+
+            }
+
+
+            console.log("DATA:", result);
+
+
+            res.json({
+
+                success:true,
+
+                data:result
+
+            });
+
+
+        }
+
+    );
+
+
 };

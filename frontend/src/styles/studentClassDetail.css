@@ -1,0 +1,336 @@
+.student-detail-page{
+
+    min-height:100vh;
+
+    background:#f5f7fb;
+
+}
+
+
+
+
+.back-btn{
+
+    border:none;
+
+    background:white;
+
+    padding:10px 20px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+
+
+.detail-card{
+
+
+    background:white;
+
+
+    border-radius:20px;
+
+
+    padding:25px;
+
+
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+
+
+
+
+.detail-header{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:20px;
+
+
+}
+
+
+
+
+
+
+
+
+.detail-icon{
+
+
+    width:70px;
+
+
+    height:70px;
+
+
+    border-radius:18px;
+
+
+    background:#dcfce7;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+
+
+
+.detail-icon i{
+
+
+    font-size:38px;
+
+
+    color:#16a34a;
+
+
+}
+
+
+
+
+
+
+
+.detail-header h2{
+
+
+    margin:0;
+
+
+    font-size:28px;
+
+
+    font-weight:800;
+
+
+    text-transform:uppercase;
+
+
+    color:#166534;
+
+
+}
+
+
+
+
+
+
+
+.detail-header p{
+
+
+    margin-top:8px;
+
+
+    margin-bottom:0;
+
+
+    font-size:18px;
+
+
+    font-weight:700;
+
+
+    color:#64748b;
+
+
+}
+
+
+
+
+
+
+
+
+.class-info{
+
+
+    margin-top:25px;
+
+
+}
+
+
+
+
+
+
+
+.class-info p{
+
+
+    font-size:17px;
+
+
+    margin-bottom:12px;
+
+
+}
+
+
+
+
+
+
+
+.section-title{
+
+
+    margin-top:35px;
+
+
+    margin-bottom:20px;
+
+
+    font-weight:800;
+
+
+}
+
+
+
+
+
+
+
+
+.table{
+
+
+    margin-bottom:0;
+
+
+}
+/* ==========================
+        ATTENDANCE HISTORY TABLE
+        DÙNG CHO GV + SV
+========================== */
+
+.history-table {
+
+    width:100%;
+
+    table-layout:fixed;
+
+    border-collapse:collapse;
+
+}
+
+
+.history-table th {
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    padding:12px;
+
+    background:#0d6efd;
+
+    color:white;
+
+    font-weight:700;
+
+}
+
+
+.history-table td {
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    padding:12px;
+
+    word-break:break-word;
+
+}
+
+
+/* Cột Buổi */
+
+.history-table th:nth-child(1),
+.history-table td:nth-child(1){
+
+    width:25%;
+
+}
+
+
+/* Cột Ngày */
+
+.history-table th:nth-child(2),
+.history-table td:nth-child(2){
+
+    width:35%;
+
+}
+
+
+/* Cột Trạng thái */
+
+.history-table th:nth-child(3),
+.history-table td:nth-child(3){
+
+    width:40%;
+
+}
+
+
+/* Có mặt */
+
+.attendance-present {
+
+    background:#e8f5e9 !important;
+
+    color:#198754 !important;
+
+    font-weight:700;
+
+}
+
+
+/* Vắng */
+
+.attendance-absent {
+
+    background:#fdeaea !important;
+
+    color:#dc3545 !important;
+
+    font-weight:700;
+
+}

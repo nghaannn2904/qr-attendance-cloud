@@ -1,0 +1,65 @@
+/* =========================
+   TEACHER BACKGROUND
+========================= */
+
+
+.teacher-page{
+
+    min-height:100vh;
+
+    background:
+
+    linear-gradient(
+
+        90deg,
+
+        #dbeafe 0%,
+
+        #eff6ff 20%,
+
+        #f5f7fb 50%,
+
+        #eff6ff 80%,
+
+        #dbeafe 100%
+
+    );
+
+}
+
+
+
+
+
+/* =========================
+   STUDENT BACKGROUND
+========================= */
+
+
+.student-page{
+
+
+    min-height:100vh;
+
+
+    background:
+
+
+    linear-gradient(
+
+        90deg,
+
+        #dcfce7 0%,
+
+        #f0fdf4 20%,
+
+        #f5f7fb 50%,
+
+        #f0fdf4 80%,
+
+        #dcfce7 100%
+
+    );
+
+
+}

@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { teacherLogin } from "../../api/authApi";
-import { useNavigate } from "react-router-dom";
+
+import "../../styles/auth.css";
 
 function LoginTeacher() {
 
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
 
@@ -20,7 +24,7 @@ function LoginTeacher() {
             });
 
             localStorage.setItem(
-                "token",
+                "teacherToken",
                 res.data.token
             );
 
@@ -34,7 +38,8 @@ function LoginTeacher() {
         } catch (err) {
 
             alert(
-                err.response?.data?.message || "Đăng nhập thất bại"
+                err.response?.data?.message ||
+                "Đăng nhập thất bại"
             );
 
         }
@@ -43,55 +48,122 @@ function LoginTeacher() {
 
     return (
 
-        <div className="container mt-5">
+        <div className="auth-page">
 
-            <div className="row justify-content-center">
+            <div className="container py-5">
 
-                <div className="col-md-4">
+                <div className="card auth-card shadow-lg border-0 mx-auto">
 
-                    <div className="card shadow">
+                    <div className="row g-0">
 
-                        <div className="card-body">
+                        {/* LEFT */}
 
-                            <h3 className="text-center mb-4">
-                                Đăng nhập giáo viên
-                            </h3>
+                        <div className="col-12 col-lg-5 auth-left">
 
-                            <form onSubmit={handleLogin}>
+                            <div className="auth-left-content">
 
-                                <div className="mb-3">
+                                <i className="bi bi-person-workspace auth-icon"></i>
 
-                                    <label>Email</label>
+                                <h2 className="fw-bold mt-4">
 
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
+                                    Giáo viên
 
-                                </div>
+                                </h2>
 
-                                <div className="mb-3">
+                                <p className="mb-0">
 
-                                    <label>Mật khẩu</label>
+                                    QR Attendance System
 
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
+                                </p>
 
-                                </div>
+                            </div>
 
-                                <button
-                                    className="btn btn-primary w-100"
-                                >
+                        </div>
+
+                        {/* RIGHT */}
+
+                        <div className="col-12 col-lg-7">
+
+                            <div className="auth-form">
+
+                                <h2 className="mb-2">
+
                                     Đăng nhập
-                                </button>
 
-                            </form>
+                                </h2>
+
+                                <p className="text-muted mb-4">
+
+                                    Vui lòng đăng nhập để tiếp tục.
+
+                                </p>
+
+                                <form onSubmit={handleLogin}>
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+
+                                            Email
+
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            className="form-control"
+                                            value={email}
+                                            onChange={(e) =>
+                                                setEmail(e.target.value)
+                                            }
+                                            required
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-4">
+
+                                        <label className="form-label">
+
+                                            Mật khẩu
+
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            value={password}
+                                            onChange={(e) =>
+                                                setPassword(e.target.value)
+                                            }
+                                            required
+                                        />
+
+                                    </div>
+
+                                    <button
+                                        className="btn btn-primary btn-login w-100"
+                                    >
+
+                                        Đăng nhập
+
+                                    </button>
+
+                                </form>
+
+                                <div className="text-center mt-4">
+
+                                    <Link
+                                        to="/"
+                                        className="back-home"
+                                    >
+
+                                        ← Quay về Trang chủ
+
+                                    </Link>
+
+                                </div>
+
+                            </div>
 
                         </div>
 

@@ -1,0 +1,777 @@
+.class-detail-page {
+
+    min-height: 100vh;
+
+    background: #f5f7fb;
+
+}
+
+.class-detail-card {
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ==========================
+        HEADER
+========================== */
+
+.class-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+}
+
+.class-icon {
+
+    width: 70px;
+
+    height: 70px;
+
+    border-radius: 20px;
+
+    background: #eaf2ff;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+.class-icon i {
+
+    font-size: 40px;
+
+    color: #2563eb;
+
+}
+
+.class-info {
+
+    flex: 1;
+
+}
+
+.class-info h2 {
+
+    margin: 0;
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    color: #1e3a8a;
+
+}
+
+.class-code {
+
+    margin-top: 8px;
+
+    margin-bottom: 0;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #64748b;
+
+}
+
+
+/* ==========================
+        QR BUTTON
+========================== */
+
+.qr-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 14px 28px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    transition: .3s;
+
+}
+
+.qr-btn:hover {
+
+    background: #1d4ed8;
+
+}
+
+.qr-btn i {
+
+    font-size: 22px;
+
+}
+
+
+/* ==========================
+        QR
+========================== */
+
+.qr-display {
+
+    margin-top: 25px;
+
+    padding: 25px;
+
+    background: #f8fafc;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+}
+
+.qr-display h5 {
+
+    font-weight: 700;
+
+    margin-bottom: 20px;
+
+}
+
+.qr-time {
+
+    margin-top: 15px;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #2563eb;
+
+}
+
+
+/* ==========================
+     DANH SÁCH SINH VIÊN
+========================== */
+
+.student-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 20px;
+
+    margin-bottom: 20px;
+
+}
+
+.student-title {
+
+    margin: 0;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    color: #1e293b;
+
+}
+
+.student-table {
+
+    margin-top: 10px;
+
+}
+
+.student-table th {
+
+    background: #eff6ff;
+
+    color: #1e3a8a;
+
+    font-weight: 700;
+
+}
+
+.student-table td {
+
+    vertical-align: middle;
+
+}
+
+
+/* ==========================
+    THÊM SINH VIÊN
+========================== */
+
+.add-student-card {
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.add-student-card h5 {
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    color: #2563eb;
+
+    margin-bottom: 20px;
+
+}
+
+.add-student-card .input-group {
+
+    max-width: 600px;
+
+}
+
+.add-student-card input {
+
+    height: 48px;
+
+    border-radius: 10px 0 0 10px;
+
+}
+
+.add-student-card .btn-primary {
+
+    border-radius: 0 10px 10px 0;
+
+}
+
+
+/* ==========================
+    KẾT QUẢ TÌM SINH VIÊN
+========================== */
+
+.student-result {
+
+    margin-top: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+}
+
+.student-result p {
+
+    margin-bottom: 10px;
+
+    font-size: 15px;
+
+}
+
+.student-result b {
+
+    color: #1e3a8a;
+
+}
+
+.student-action {
+
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 20px;
+
+}
+
+.student-action .btn {
+
+    min-width: 150px;
+
+}
+
+
+/* ==========================
+        RESPONSIVE
+========================== */
+
+@media (max-width:768px){
+
+    .class-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .qr-btn{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .student-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+    .student-action{
+
+        flex-direction:column;
+
+    }
+
+    .student-action .btn{
+
+        width:100%;
+
+    }
+
+}
+.delete-confirm-box {
+
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    margin-top: 20px;
+
+    text-align: center;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+
+}
+
+
+.delete-confirm-box h5 {
+
+    font-weight:700;
+
+    margin-bottom:15px;
+
+}
+
+
+.delete-confirm-box p {
+
+    color:#666;
+
+}
+.delete-confirm-box {
+
+    position: fixed;
+
+    top: 35%;
+
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 400px;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+
+    z-index: 9999;
+
+}
+/* ===========================
+   ATTENDANCE HISTORY
+=========================== */
+
+.table thead th{
+
+    background:#0d6efd;
+    color:white;
+    text-align:center;
+    vertical-align:middle;
+
+}
+
+.attendance-present{
+
+    background:#e8f5e9 !important;
+    color:#198754 !important;   /* xanh lá Bootstrap */
+    font-weight:700;
+    text-align:center;
+    vertical-align:middle;
+
+}
+
+.attendance-absent{
+
+    background:#fdeaea !important;
+    color:#dc3545 !important;
+    font-weight:700;
+    text-align:center;
+    vertical-align:middle;
+
+}
+
+.table tbody td{
+
+    vertical-align:middle;
+
+}
+
+.session-modal-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.session-modal{
+
+    width:850px;
+
+    max-height:85vh;
+
+    overflow:auto;
+
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:25px;
+
+}
+
+.session-card{
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    padding:18px;
+
+    margin-bottom:15px;
+
+}
+.edit-modal-overlay{
+
+    position: fixed;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.4);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+
+.edit-modal{
+
+    background:white;
+
+    width:420px;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+
+}
+/* ==========================
+        TABLE ALIGNMENT
+========================== */
+
+/* ==========================
+        TABLE CHUNG
+========================== */
+
+.class-detail-card .table {
+
+    width:100%;
+
+    table-layout:fixed;
+
+    border-collapse:collapse;
+
+}
+
+
+.class-detail-card .table th {
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    padding:12px;
+
+    background:#eff6ff;
+
+    color:#1e3a8a;
+
+    font-weight:700;
+
+}
+
+
+.class-detail-card .table td {
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    padding:12px;
+
+    height:50px;
+
+    word-break:break-word;
+
+}
+
+
+
+/* ==========================
+        BẢNG SINH VIÊN
+========================== */
+
+
+/* STT */
+
+.student-table th:nth-child(1),
+.student-table td:nth-child(1){
+
+    width:8%;
+
+}
+
+
+/* MSSV */
+
+.student-table th:nth-child(2),
+.student-table td:nth-child(2){
+
+    width:22%;
+
+}
+
+
+/* HỌ TÊN */
+
+.student-table th:nth-child(3),
+.student-table td:nth-child(3){
+
+    width:28%;
+
+}
+
+
+/* EMAIL */
+
+.student-table th:nth-child(4),
+.student-table td:nth-child(4){
+
+    width:32%;
+
+}
+
+
+/* CỘT XÓA */
+
+.student-table th:nth-child(5),
+.student-table td:nth-child(5){
+
+    width:10%;
+
+    text-align:center;
+
+}
+
+
+
+/* nút xóa */
+
+.delete-btn {
+
+    width:35px;
+
+    height:35px;
+
+    padding:0;
+
+    display:inline-flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+.delete-btn i {
+
+    font-size:15px;
+
+}
+
+
+
+/* hover */
+
+.student-table tbody tr:hover {
+
+    background:#f8fafc;
+
+}
+
+
+
+/* ==========================
+        LỊCH SỬ ĐIỂM DANH
+========================== */
+
+
+.history-table th:nth-child(1),
+.history-table td:nth-child(1){
+
+    width:25%;
+
+}
+
+
+.history-table th:nth-child(2),
+.history-table td:nth-child(2){
+
+    width:35%;
+
+}
+
+
+.history-table th:nth-child(3),
+.history-table td:nth-child(3){
+
+    width:40%;
+
+}
+
+
+
+
+/* ==========================
+        XÁC NHẬN XÓA
+========================== */
+
+
+.delete-confirm-box {
+
+
+    position:fixed;
+
+    top:35%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+
+    width:400px;
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:15px;
+
+
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+
+    z-index:9999;
+
+
+    text-align:center;
+
+}
+
+
+.delete-confirm-box h5 {
+
+    font-weight:700;
+
+    margin-bottom:15px;
+
+}
+
+
+.delete-confirm-box p {
+
+    color:#666;
+
+}

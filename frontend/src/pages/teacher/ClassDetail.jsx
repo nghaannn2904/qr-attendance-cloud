@@ -1,36 +1,62 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import QRCode from "react-qr-code";
+import { useParams, useNavigate } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
+import api from "../../api/axios";
+import "../../styles/classDetail.css";
 
-
-import {
-    getStudentsByClass,
-    startAttendance,
-    getAttendanceList
-} from "../../api/classApi";
 function ClassDetail() {
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
-
+    const [classInfo, setClassInfo] = useState(null);
     const [students, setStudents] = useState([]);
 
-    const [qrToken, setQrToken] = useState("");
-
+    const [qrData, setQrData] = useState(null);
     const [countdown, setCountdown] = useState(0);
+    const [showAddStudent, setShowAddStudent] = useState(false);
 
-    const [sessionId, setSessionId] = useState(null);
+    const [studentCode, setStudentCode] = useState("");
 
-    const [attendance, setAttendance] = useState([]);
+    const [searchStudent, setSearchStudent] = useState(null);
 
+    const [searchError, setSearchError] = useState("");
 
-    const [showAttendance, setShowAttendance] = useState(false);
+    const [deleteMode, setDeleteMode] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [addMessage, setAddMessage] = useState("");
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
+    const [deleteMessage, setDeleteMessage] = useState("");
+    const [attendanceHistory, setAttendanceHistory] = useState([]);
+    const [showHistory, setShowHistory] = useState(false);
+
+    const [showSessionModal, setShowSessionModal] = useState(false);
+
+    const [sessions, setSessions] = useState([]);
+
+    const [sessionDate, setSessionDate] = useState("");
+
+    const [startTime, setStartTime] = useState("");
+
+    const [endTime, setEndTime] = useState("");
+    const [editingSession, setEditingSession] = useState(null);
+
+    const [showEditModal, setShowEditModal] = useState(false);
     useEffect(() => {
 
+        console.log("EDIT MODE:", editingSession);
+
+    }, [editingSession]);
+    useEffect(() => {
+
+        loadClass();
         loadStudents();
 
-    }, []);
+    }, [id]);
+
+    // ==========================
+    // COUNTDOWN QR
+    // ==========================
 
     useEffect(() => {
 
@@ -38,7 +64,15 @@ function ClassDetail() {
 
         const timer = setInterval(() => {
 
-            setCountdown((prev) => prev - 1);
+            setCountdown(prev => {
+
+                if (prev <= 1) {
+                    return 0;
+                }
+
+                return prev - 1;
+
+            });
 
         }, 1000);
 
@@ -46,17 +80,43 @@ function ClassDetail() {
 
     }, [countdown]);
 
-    const loadStudents = async () => {
+    useEffect(() => {
+
+        if (countdown === 0 && qrData) {
+
+            setQrData(null);
+
+        }
+
+    }, [countdown, qrData]);
+
+    // ==========================
+    // LOAD CLASS
+    // ==========================
+
+    const loadClass = async () => {
 
         try {
 
-            const res = await getStudentsByClass(id, token);
+            const token = localStorage.getItem("teacherToken");
 
-            console.log(res.data);
+            const res = await api.get(
 
-            setStudents(res.data.students);
+                `/classes/${id}`,
 
-        } catch (err) {
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+
+            setClassInfo(res.data);
+
+        }
+
+        catch (err) {
 
             console.log(err);
 
@@ -64,41 +124,328 @@ function ClassDetail() {
 
     };
 
-    const handleOpenAttendance = async () => {
+    // ==========================
+    // LOAD STUDENTS
+    // ==========================
+
+    const loadStudents = async () => {
 
         try {
 
-            const res = await startAttendance(id, token);
+            const token = localStorage.getItem("teacherToken");
 
-            console.log(res.data);
+            const res = await api.get(
 
-            setQrToken(res.data.qr_token);
+                `/classes/${id}/students`,
 
-            setCountdown(res.data.countdown);
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
 
-            setSessionId(res.data.session_id);
+            );
 
-        } catch (err) {
+            setStudents(res.data);
+
+        }
+
+        catch (err) {
 
             console.log(err);
 
-            console.log(err.response);
+        }
 
-            console.log(err.response?.data);
+    };
+
+    // ==========================
+    // LỊCH SỬ ĐIỂM DANH
+    // ==========================
+
+    const loadAttendanceHistory = async () => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.get(
+
+                `/classes/${id}/attendance/history`,
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+
+
+            setAttendanceHistory(res.data.data);
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+    const loadSessions = async () => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.get(
+
+                `/classes/${id}/sessions`,
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+
+            setSessions(res.data.data);
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+    const createSession = async () => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            await api.post(
+
+                `/classes/${id}/sessions`,
+
+                {
+
+                    session_date: sessionDate,
+
+                    start_time: startTime,
+
+                    end_time: endTime
+
+                },
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`
+
+                    }
+
+                }
+
+            );
+
+            setSessionDate("");
+
+            setStartTime("");
+
+            setEndTime("");
+
+            loadSessions();
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+    const updateSession = async () => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            await api.put(
+
+                `/classes/${id}/sessions/${editingSession.id}`,
+
+                {
+
+                    session_date: sessionDate,
+
+                    start_time: startTime,
+
+                    end_time: endTime
+
+                },
+
+                {
+
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+
+                }
+
+            );
+
+            setEditingSession(null);
+
+            setSessionDate("");
+
+            setStartTime("");
+
+            setEndTime("");
+
+            loadSessions();
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+    // ==========================
+    // MỞ QR
+    // ==========================
+
+    const startAttendance = async () => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.post(
+
+                `/classes/${id}/attendance/open`,
+
+                {},
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`
+
+                    }
+
+                }
+
+            );
+
+            setQrData(res.data);
+
+            setCountdown(res.data.countdown);
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+    const openSessionQr = async (sessionId) => {
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.post(
+
+                `/classes/${id}/sessions/${sessionId}/open`,
+
+                {},
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+
+            setQrData(res.data);
+            setCountdown(res.data.countdown);
+
+        }
+
+        catch (err) {
 
             alert(
-                err.response?.data?.message || "Không thể mở QR."
+                err.response?.data?.message ||
+                "Không mở được QR."
             );
 
         }
 
     };
 
-    const handleViewAttendance = async () => {
+    const deleteSession = async (sessionId) => {
 
-        if (!sessionId) {
+        if (!window.confirm("Bạn có chắc muốn xóa buổi học này?")) {
+            return;
+        }
 
-            alert("Chưa có buổi điểm danh nào.");
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            await api.delete(
+
+                `/classes/${id}/sessions/${sessionId}`,
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+
+            loadSessions();
+
+        }
+
+        catch (err) {
+
+            alert(
+                err.response?.data?.message ||
+                "Không thể xóa buổi học."
+            );
+
+        }
+
+    };
+
+    // ==========================
+    // TÌM SINH VIÊN
+    // ==========================
+
+    const searchStudentByCode = async () => {
+
+        if (!studentCode.trim()) {
+
+            alert("Nhập MSSV");
 
             return;
 
@@ -106,25 +453,168 @@ function ClassDetail() {
 
         try {
 
-            const res = await getAttendanceList(
-                id,
-                sessionId,
-                token
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.get(
+
+                `/students/search/${studentCode}`,
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`
+
+                    }
+
+                }
+
             );
 
-            console.log(res.data);
+            if (res.data.success) {
 
-            setAttendance(res.data.data || []);
+                setSearchStudent(res.data.student);
 
-            setShowAttendance(true);
+                setSearchError("");
 
-        } catch (err) {
+            }
 
-            console.log(err);
+            else {
+
+                setSearchStudent(null);
+
+                setSearchError(res.data.message);
+
+            }
+
+        }
+
+        catch {
+
+            setSearchStudent(null);
+
+            setSearchError("Không tìm thấy sinh viên.");
+
+        }
+
+    };
+
+    // ==========================
+    // THÊM VÀO LỚP
+    // ==========================
+
+    const addStudent = async () => {
+
+        if (!searchStudent) {
+
+            alert("Chưa chọn sinh viên");
+
+            return;
+
+        }
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+            const res = await api.post(
+
+                `/classes/${id}/students`,
+
+                {
+
+                    student_id: searchStudent.id
+
+                },
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`
+
+                    }
+
+                }
+
+            );
+
+            setAddMessage(res.data.message);
+
+            setShowAddStudent(false);
+
+            setStudentCode("");
+
+            setSearchStudent(null);
+
+            loadStudents();
+
+        }
+
+        catch (err) {
 
             alert(
+
                 err.response?.data?.message ||
-                "Không lấy được danh sách điểm danh"
+
+                "Có lỗi xảy ra."
+
+            );
+
+        }
+
+    };
+    // ==========================
+    // XÓA SINH VIÊN KHỎI LỚP
+    // ==========================
+
+    const removeStudent = async (studentId) => {
+
+
+        try {
+
+            const token = localStorage.getItem("teacherToken");
+
+
+            const res = await api.delete(
+
+                `/classes/${id}/students/${studentId}`,
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`
+
+                    }
+
+                }
+
+            );
+
+
+            setDeleteMessage(res.data.message);
+
+
+            loadStudents();
+
+
+            setShowDeleteConfirm(false);
+
+            setSelectedStudentId(null);
+
+
+        }
+
+
+        catch (err) {
+
+            alert(
+
+                err.response?.data?.message ||
+
+                "Xóa sinh viên thất bại."
+
             );
 
         }
@@ -133,69 +623,918 @@ function ClassDetail() {
 
     return (
 
-        <div className="container mt-5">
+        <div className="class-detail-page teacher-page">
 
-            <h2>Quản lý lớp</h2>
+            <div className="container py-5">
 
-            <hr />
+                <button
 
-            <h4>ID lớp: {id}</h4>
+                    className="btn btn-secondary mb-4"
 
-            <br />
+                    onClick={() => navigate(-1)}
 
-            <button
-                className="btn btn-success mb-4"
-                onClick={handleOpenAttendance}
-            >
-                Mở QR điểm danh
-            </button>
+                >
 
-            <button
-                className="btn btn-primary mb-4 ms-2"
-                onClick={handleViewAttendance}
-            >
-                Xem điểm danh
-            </button>
+                    ← Quay lại
 
+                </button>
+
+                {
+
+                    classInfo && (
+
+                        <div className="class-detail-card">
+
+                            {/* HEADER */}
+
+                            <div className="class-header">
+
+                                <div className="class-icon">
+
+                                    <i className="bi bi-book"></i>
+
+                                </div>
+
+                                <div className="class-info">
+
+                                    <h2>
+
+                                        {classInfo.subject_name}
+
+                                    </h2>
+
+                                    <p className="class-code">
+
+                                        Mã lớp {classInfo.section}
+
+                                    </p>
+
+                                </div>
+
+                                <div className="d-flex gap-2">
+
+                                    <button
+
+                                        className="qr-btn"
+
+                                        onClick={startAttendance}
+
+                                    >
+
+                                        <i className="bi bi-qr-code"></i>
+
+                                        Mở điểm danh
+
+                                    </button>
+
+                                    <button
+
+                                        className="btn btn-warning"
+
+                                        onClick={() => {
+
+                                            loadSessions();
+
+                                            setShowSessionModal(true);
+
+                                        }}
+
+                                    >
+
+                                        <i className="bi bi-calendar-week me-2"></i>
+
+                                        Quản lý buổi học
+
+                                    </button>
+
+
+                                    <button
+                                        className="btn btn-info"
+                                        onClick={() => navigate(`/teacher/classes/${id}/attendance`)}
+                                    >
+                                        <i className="bi bi-calendar-check me-2"></i>
+                                        Lịch sử điểm danh
+                                    </button>
+
+
+                                </div>
+
+                            </div>
+
+                            {/* QR */}
+
+                            {
+
+                                qrData && (
+
+                                    <div className="qr-display">
+
+                                        <h5>
+                                            Quét mã để điểm danh {qrData.title}
+                                        </h5>
+
+                                        <QRCodeCanvas
+
+                                            value={qrData.qr_token}
+
+                                            size={220}
+
+                                        />
+
+                                        <p className="qr-time">
+
+                                            Thời gian còn lại
+
+                                            {" "}
+
+                                            {countdown}
+
+                                            {" "}
+
+                                            giây
+
+                                        </p>
+
+                                    </div>
+
+                                )
+
+                            }
+
+                            <hr />
+
+                            {/* DANH SÁCH + BUTTON */}
+
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+
+                                <h4 className="student-title mb-0">
+
+                                    Danh sách sinh viên
+
+                                </h4>
+
+                                <div className="d-flex gap-2">
+
+                                    <button
+
+                                        className="btn btn-success"
+
+                                        onClick={() => {
+
+                                            setShowAddStudent(!showAddStudent);
+
+                                            setStudentCode("");
+
+                                            setSearchStudent(null);
+
+                                            setSearchError("");
+
+                                        }}
+
+                                    >
+
+                                        <i className="bi bi-person-plus-fill me-2"></i>
+
+                                        Thêm sinh viên
+
+                                    </button>
+
+
+                                    <button
+
+                                        className="btn btn-danger"
+
+                                        onClick={() => {
+
+                                            setDeleteMode(true);
+
+                                            setShowAddStudent(false);
+
+                                        }}
+
+                                    >
+
+                                        <i className="bi bi-trash-fill me-2"></i>
+
+                                        Xóa sinh viên
+
+                                    </button>
+
+
+                                </div>
+
+                            </div>
+
+                            {/* FORM THÊM */}
+
+                            {
+
+                                showAddStudent && (
+
+                                    <div className="card border-0 shadow-sm mb-4">
+
+                                        <div className="card-body">
+
+                                            <h5 className="fw-bold mb-3">
+
+                                                THÊM SINH VIÊN VÀO LỚP
+
+                                            </h5>
+
+                                            <div className="input-group mb-3">
+
+                                                <input
+
+                                                    type="text"
+
+                                                    className="form-control"
+
+                                                    placeholder="Nhập MSSV"
+
+                                                    value={studentCode}
+
+                                                    onChange={(e) =>
+
+                                                        setStudentCode(
+
+                                                            e.target.value
+
+                                                        )
+
+                                                    }
+
+                                                />
+
+                                                <button
+
+                                                    className="btn btn-primary"
+
+                                                    onClick={searchStudentByCode}
+
+                                                >
+
+                                                    Tìm
+
+                                                </button>
+
+                                            </div>
+
+                                            {
+
+                                                searchError && (
+
+                                                    <div className="alert alert-danger">
+
+                                                        {searchError}
+
+                                                    </div>
+
+                                                )
+
+                                            }
+
+                                            {
+
+                                                searchStudent && (
+
+                                                    <div className="alert alert-success">
+
+                                                        <p>
+
+                                                            <b>MSSV:</b>
+
+                                                            {" "}
+
+                                                            {
+
+                                                                searchStudent.student_code
+
+                                                            }
+
+                                                        </p>
+
+                                                        <p>
+
+                                                            <b>Họ tên:</b>
+
+                                                            {" "}
+
+                                                            {
+
+                                                                searchStudent.full_name
+
+                                                            }
+
+                                                        </p>
+
+                                                        <p>
+
+                                                            <b>Email:</b>
+
+                                                            {" "}
+
+                                                            {
+
+                                                                searchStudent.email
+
+                                                            }
+
+                                                        </p>
+
+                                                        <hr />
+
+                                                        <p>
+
+                                                            Thêm sinh viên này vào lớp?
+
+                                                        </p>
+
+                                                        <div className="d-flex gap-2">
+
+                                                            <button
+
+                                                                className="btn btn-success"
+
+                                                                onClick={addStudent}
+
+                                                            >
+
+                                                                Thêm vào lớp
+
+                                                            </button>
+
+                                                            <button
+
+                                                                className="btn btn-secondary"
+
+                                                                onClick={() => {
+
+                                                                    setShowAddStudent(false);
+
+                                                                    setSearchStudent(null);
+
+                                                                    setStudentCode("");
+
+                                                                }}
+
+                                                            >
+
+                                                                Đóng
+
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                )
+
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                )
+
+                            }
+
+                            {/* TABLE */}
+
+                            <div className="table-responsive">
+
+                                <table className="table student-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>STT</th>
+
+                                            <th>MSSV</th>
+
+                                            <th>Họ tên</th>
+
+                                            <th>Email</th>
+
+                                            {
+                                                deleteMode && (
+                                                    <th>Xóa</th>
+                                                )
+                                            }
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        {
+                                            students.length > 0 ?
+
+                                                students.map((sv, index) => (
+
+                                                    <tr key={sv.id}>
+
+                                                        <td>
+                                                            {index + 1}
+                                                        </td>
+
+
+                                                        <td>
+                                                            {sv.student_code}
+                                                        </td>
+
+
+                                                        <td>
+                                                            {sv.full_name}
+                                                        </td>
+
+
+                                                        <td>
+                                                            {sv.email}
+                                                        </td>
+
+
+                                                        {
+                                                            deleteMode && (
+
+                                                                <td className="delete-column">
+
+                                                                    <button
+
+                                                                        className="btn btn-danger btn-sm delete-btn"
+
+                                                                        onClick={() => {
+
+                                                                            setSelectedStudentId(sv.id);
+
+                                                                            setShowDeleteConfirm(true);
+
+                                                                        }}
+
+                                                                    >
+
+                                                                        <i className="bi bi-trash-fill"></i>
+
+                                                                    </button>
+
+
+                                                                </td>
+
+                                                            )
+                                                        }
+
+
+                                                    </tr>
+
+                                                ))
+
+                                                :
+
+                                                <tr>
+
+                                                    <td
+                                                        colSpan={deleteMode ? 5 : 4}
+                                                        className="text-center"
+                                                    >
+
+                                                        Chưa có sinh viên
+
+                                                    </td>
+
+                                                </tr>
+
+                                        }
+
+                                    </tbody>
+
+                                </table>
+                                {
+
+                                    deleteMode && (
+
+                                        <div className="text-center mt-3">
+                                            {
+                                                addMessage && (
+
+                                                    <div className="alert alert-success">
+
+                                                        {addMessage}
+
+                                                    </div>
+
+                                                )
+                                            }
+                                            {
+                                                deleteMessage && (
+
+                                                    <div className="alert alert-success">
+
+                                                        {deleteMessage}
+
+                                                    </div>
+
+                                                )
+                                            }
+                                            {
+                                                showDeleteConfirm && (
+
+                                                    <div className="delete-confirm-box">
+
+
+                                                        <h5>
+
+                                                            Xác nhận xóa sinh viên
+
+                                                        </h5>
+
+
+                                                        <p>
+
+                                                            Bạn có chắc muốn xóa sinh viên này khỏi lớp?
+
+                                                        </p>
+
+
+                                                        <div className="d-flex justify-content-center gap-3">
+
+
+                                                            <button
+
+                                                                className="btn btn-secondary"
+
+                                                                onClick={() => {
+
+                                                                    setShowDeleteConfirm(false);
+
+                                                                    setSelectedStudentId(null);
+
+                                                                }}
+
+                                                            >
+
+                                                                Bỏ qua
+
+                                                            </button>
+
+
+
+                                                            <button
+
+                                                                className="btn btn-danger"
+
+                                                                onClick={() => removeStudent(selectedStudentId)}
+
+                                                            >
+
+                                                                Xóa
+
+                                                            </button>
+
+
+                                                        </div>
+
+
+                                                    </div>
+
+                                                )
+                                            }
+
+                                            <button
+
+                                                className="btn btn-primary"
+
+                                                onClick={() => {
+
+                                                    setDeleteMode(false);
+
+                                                    setShowDeleteConfirm(false);
+
+                                                    setDeleteMessage("");
+
+                                                }}
+
+                                            >
+                                                Hoàn thành thao tác
+
+                                            </button>
+
+
+                                        </div>
+
+                                    )
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    )
+
+                }
+
+            </div>
             {
-                qrToken && (
+                showSessionModal && (
 
-                    <div className="text-center mb-5">
+                    <div className="session-modal-overlay">
 
-                        <QRCode
-                            value={qrToken}
-                            size={220}
-                        />
+                        <div className="session-modal">
 
-                        <h5 className="mt-3">
-                            QR còn hiệu lực: {countdown} giây
-                        </h5>
+                            <h3>
 
-                        <div className="mt-4">
+                                Quản lý buổi học
 
-                            <label className="form-label fw-bold">
-                                QR Token
-                            </label>
+                            </h3>
 
-                            <textarea
-                                className="form-control"
-                                rows="4"
-                                value={qrToken}
-                                readOnly
-                            />
+                            <hr />
 
-                            <button
-                                className="btn btn-secondary mt-3"
-                                onClick={() => {
+                            <div className="row g-2 mb-4">
 
-                                    navigator.clipboard.writeText(qrToken);
+                                <div className="col">
+                                    <input
 
-                                    alert("Đã sao chép QR Token!");
+                                        type="date"
 
-                                }}
-                            >
-                                📋 Copy Token
-                            </button>
+                                        className="form-control"
+
+                                        value={sessionDate}
+
+                                        onChange={(e) => setSessionDate(e.target.value)}
+
+                                    />
+
+                                </div>
+
+                                <div className="col">
+
+                                    <input
+
+                                        type="time"
+
+                                        className="form-control"
+
+                                        value={startTime}
+
+                                        onChange={(e) => setStartTime(e.target.value)}
+
+                                    />
+
+                                </div>
+
+                                <div className="col">
+
+                                    <input
+
+                                        type="time"
+
+                                        className="form-control"
+
+                                        value={endTime}
+
+                                        onChange={(e) => setEndTime(e.target.value)}
+
+                                    />
+
+                                </div>
+
+                                <div className="col-auto d-flex gap-2">
+
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={editingSession ? updateSession : createSession}
+                                    >
+                                        {editingSession ? "Lưu" : "Thêm buổi"}
+                                    </button>
+
+                                    {editingSession && (
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+
+                                                setEditingSession(null);
+                                                setSessionDate("");
+                                                setStartTime("");
+                                                setEndTime("");
+
+                                            }}
+                                        >
+                                            Hủy
+                                        </button>
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                            <hr />
+
+                            {
+
+                                sessions.map(session => (
+
+                                    <div
+                                        key={session.id}
+                                        className="session-card"
+                                    >
+
+                                        <h5>
+
+                                            Buổi {session.lesson_no}
+
+                                        </h5>
+
+                                        <p>
+
+                                            {
+                                                new Date(session.session_date)
+                                                    .toLocaleDateString("vi-VN")
+                                            }
+                                        </p>
+
+                                        <p>
+
+                                            {session.start_time}
+
+                                            {" - "}
+
+                                            {session.end_time}
+
+                                        </p>
+
+                                        <div className="d-flex gap-2">
+
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => openSessionQr(session.id)}
+                                            >
+
+                                                Mở QR
+
+                                            </button>
+
+                                            <button
+                                                className="btn btn-warning btn-sm"
+                                                onClick={() => {
+
+                                                    setEditingSession(session);
+
+                                                    setSessionDate(
+                                                        session.session_date
+                                                    );
+
+                                                    setStartTime(
+                                                        session.start_time.substring(0, 5)
+                                                    );
+
+                                                    setEndTime(
+                                                        session.end_time.substring(0, 5)
+                                                    );
+
+                                                    setShowEditModal(true);
+
+                                                }}
+                                            >
+                                                Sửa
+                                            </button>
+
+                                            <button
+                                                className="btn btn-danger btn-sm"
+                                                onClick={() => deleteSession(session.id)}
+                                            >
+                                                Xóa
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                ))
+
+                            }
+                            {
+                                showEditModal && (
+
+                                    <div className="edit-modal-overlay">
+
+                                        <div className="edit-modal">
+
+                                            <h4>
+                                                Sửa Buổi {editingSession?.lesson_no}
+                                            </h4>
+
+
+                                            <div className="mb-3">
+
+                                                <label>
+                                                    Ngày học
+                                                </label>
+
+                                                <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    value={sessionDate}
+                                                    onChange={
+                                                        e => setSessionDate(e.target.value)
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="mb-3">
+
+                                                <label>
+                                                    Giờ bắt đầu
+                                                </label>
+
+                                                <input
+                                                    type="time"
+                                                    className="form-control"
+                                                    value={startTime}
+                                                    onChange={
+                                                        e => setStartTime(e.target.value)
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="mb-3">
+
+                                                <label>
+                                                    Giờ kết thúc
+                                                </label>
+
+                                                <input
+                                                    type="time"
+                                                    className="form-control"
+                                                    value={endTime}
+                                                    onChange={
+                                                        e => setEndTime(e.target.value)
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="d-flex justify-content-end gap-2">
+
+
+                                                <button
+                                                    className="btn btn-secondary"
+                                                    onClick={() => {
+
+                                                        setShowEditModal(false);
+
+                                                        setEditingSession(null);
+
+                                                    }}
+                                                >
+                                                    Bỏ qua
+                                                </button>
+
+
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={() => {
+
+                                                        updateSession();
+
+                                                        setShowEditModal(false);
+
+                                                    }}
+                                                >
+                                                    Sửa
+                                                </button>
+
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                )
+                            }
+                            <div className="text-end mt-4">
+
+                                <button
+
+                                    className="btn btn-secondary"
+
+                                    onClick={() => setShowSessionModal(false)}
+
+                                >
+
+                                    Đóng
+
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -203,140 +1542,8 @@ function ClassDetail() {
 
                 )
             }
-
-            <h4>Danh sách sinh viên</h4>
-
-            <hr />
-
-            {
-                students.length === 0
-                    ? (
-                        <p>Chưa có sinh viên.</p>
-                    )
-                    : (
-                        students.map((student) => (
-
-                            <div
-                                className="card mb-3 shadow-sm"
-                                key={student.id}
-                            >
-
-                                <div className="card-body">
-
-                                    <h5>
-
-                                        {student.full_name}
-
-                                    </h5>
-
-                                    <p>
-
-                                        MSSV:
-
-                                        {" "}
-
-                                        {student.student_code}
-
-                                    </p>
-
-                                    <p>
-
-                                        Email:
-
-                                        {" "}
-
-                                        {student.email}
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        ))
-                    )
-            }
-
-            {
-                showAttendance && (
-
-                    <>
-
-                        <h4 className="mt-5">
-                            Kết quả điểm danh
-                        </h4>
-
-                        <table className="table table-bordered">
-
-                            <thead>
-                                <tr>
-                                    <th>MSSV</th>
-                                    <th>Họ tên</th>
-                                    <th>Trạng thái</th>
-                                    <th>Thời gian</th>
-                                </tr>
-                            </thead>
-
-
-                            <tbody>
-
-                                {
-                                    attendance.length === 0
-
-                                        ?
-
-                                        (
-                                            <tr>
-                                                <td
-                                                    colSpan="4"
-                                                    className="text-center"
-                                                >
-                                                    Chưa có ai điểm danh
-                                                </td>
-                                            </tr>
-                                        )
-
-                                        :
-
-                                        attendance.map((item) => (
-
-                                            <tr key={item.id}>
-
-                                                <td>
-                                                    {item.student_code}
-                                                </td>
-
-                                                <td>
-                                                    {item.full_name}
-                                                </td>
-
-                                                <td>
-                                                    {item.status}
-                                                </td>
-
-                                                <td>
-                                                    {item.check_in_time || "-"}
-                                                </td>
-
-                                            </tr>
-
-                                        ))
-
-                                }
-
-                            </tbody>
-
-                        </table>
-
-                    </>
-
-                )
-            }
-
         </div>
 
     );
-
 }
-
 export default ClassDetail;

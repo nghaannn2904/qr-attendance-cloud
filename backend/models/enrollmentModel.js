@@ -1,24 +1,25 @@
 const db = require("../config/db");
 
 // Thêm nhiều sinh viên vào lớp
-exports.addStudentsToClass = (classId, studentIds, callback) => {
-
-    if (!studentIds || studentIds.length === 0) {
-        return callback(null, {
-            affectedRows: 0
-        });
-    }
-
-    // Tạo dữ liệu dạng:
-    // [[1,1],[1,2],[1,3]]
-    const values = studentIds.map(studentId => [classId, studentId]);
+exports.addStudentToClass = (classId, studentId, callback) => {
 
     const sql = `
-        INSERT IGNORE INTO enrollments(class_id, student_id)
-        VALUES ?
+        INSERT IGNORE INTO enrollments
+        (
+            class_id,
+            student_id
+        )
+        VALUES (?,?)
     `;
 
-    db.query(sql, [values], callback);
+    db.query(
+        sql,
+        [
+            classId,
+            studentId
+        ],
+        callback
+    );
 
 };
 //Lấy danh sách sinh viên của một lớp

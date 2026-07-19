@@ -1,112 +1,424 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMyClasses } from "../../api/classApi";
+
+import api from "../../api/axios";
+
+import "../../styles/dashboard.css";
+
 
 function DashboardTeacher() {
 
-    const teacher = JSON.parse(localStorage.getItem("teacher"));
-    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
 
+    const [teacher, setTeacher] = useState(null);
+
     const [classes, setClasses] = useState([]);
+
+
 
     useEffect(() => {
 
+
+        const data =
+            JSON.parse(
+                localStorage.getItem("teacher")
+            );
+
+
+        setTeacher(data);
+
+
         loadClasses();
 
+
     }, []);
+
+
+
 
     const loadClasses = async () => {
 
         try {
 
-            const res = await getMyClasses(token);
 
-            console.log("API:", res.data);
+            const token =
+                localStorage.getItem(
+                    "teacherToken"
+                );
+
+
+
+            const res =
+                await api.get(
+                    "/classes",
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+
+            console.log(res.data);
+
 
             setClasses(res.data);
 
-        } catch (err) {
+
+
+        }
+        catch (err) {
 
             console.log(err);
 
+        }
 
 
-        };
     };
-    console.log("teacher:", teacher);
-    console.log("classes:", classes);
-    console.log("isArray:", Array.isArray(classes));
+
+
+
+
+
+    const logout = () => {
+
+
+        localStorage.removeItem(
+            "teacherToken"
+        );
+
+
+        localStorage.removeItem(
+            "teacher"
+        );
+
+
+        navigate("/");
+
+
+    };
+
+
+
+
 
     return (
 
-        <div className="container mt-5">
 
-            <h2>Dashboard Giáo viên</h2>
+        <div className="dashboard-page teacher-page">
 
-            <hr />
 
-            <h4>Xin chào, {teacher?.full_name}</h4>
+            {/* NAVBAR */}
 
-            <br />
+            <nav className="dashboard-navbar">
 
-            <h5>Lớp học của bạn</h5>
 
-            {
-                classes.length === 0
-                    ? (
-                        <p>Chưa có lớp.</p>
-                    )
-                    : (
-                        classes.map((item) => (
+                <div className="container d-flex justify-content-between align-items-center">
 
-                            <div
-                                key={item.id}
-                                className="card mb-3 shadow-sm"
-                            >
 
-                                <div className="card-body">
+                    <h4 className="mb-0 text-primary fw-bold">
 
-                                    <h5>
-                                        Lớp {item.section}
-                                    </h5>
+                        QR Attendance
 
-                                    <p>
+                    </h4>
 
-                                        Loại lớp:
-                                        {" "}
-                                        {item.class_type}
 
-                                    </p>
 
-                                    <p>
 
-                                        Học kỳ:
-                                        {" "}
-                                        {item.semester}
 
-                                    </p>
+                    <div className="d-flex align-items-center gap-3">
 
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={() => navigate(`/teacher/class/${item.id}`)}
-                                    >
-                                        Quản lý
-                                    </button>
+
+                        <div className="teacher-avatar">
+
+
+                            {
+                                teacher?.full_name
+                                    ?.charAt(0)
+                            }
+
+
+                        </div>
+
+
+
+
+
+                        <span className="d-none d-md-block">
+
+
+                            {
+                                teacher?.full_name
+                            }
+
+
+                        </span>
+
+
+
+
+
+
+                        <button
+
+                            className="
+                            btn
+                            btn-outline-danger
+                            btn-sm
+                            "
+
+                            onClick={logout}
+
+                        >
+
+                            Đăng xuất
+
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </nav>
+
+
+
+
+
+
+
+            <div className="container py-5">
+
+
+
+                <h2 className="fw-bold mb-2">
+
+
+                    Xin chào,
+                    {" "}
+                    {teacher?.full_name}
+
+
+                </h2>
+
+
+
+
+
+                <p className="text-muted">
+
+
+                    Quản lý lớp học và điểm danh QR Code
+
+
+                </p>
+
+
+
+
+
+
+                <div className="row g-4 mt-3">
+
+
+
+
+
+                    {
+
+
+                        classes.length > 0 ?
+
+
+
+                            classes.map((item) => (
+
+
+
+                                <div
+
+                                    className="
+                            col-12
+                            col-md-6
+                            col-lg-4
+                            "
+
+                                    key={item.id}
+
+                                >
+
+
+
+
+
+                                    <div className="class-card">
+
+
+
+
+
+                                        {/* ICON + TÊN MÔN */}
+
+
+
+                                        <div className="class-top">
+
+
+                                            <div className="class-icon">
+
+
+                                                <i className="bi bi-book"></i>
+
+
+                                            </div>
+
+
+
+
+
+
+                                            <h3>
+
+
+                                                {
+                                                    item.subject_name
+                                                }
+
+
+                                            </h3>
+
+
+
+                                        </div>
+
+
+
+
+
+
+
+
+
+                                        {/* MÃ LỚP + BUTTON */}
+
+
+
+                                        <div className="class-bottom">
+
+
+
+                                            <div className="class-code">
+
+
+                                                Mã lớp:
+                                                {" "}
+                                                {item.section}
+
+
+
+                                            </div>
+
+
+
+
+
+                                            <button
+
+
+                                                className="btn-class"
+
+
+
+                                                onClick={() =>
+
+
+                                                    navigate(
+                                                        `/teacher/class/${item.id}`
+                                                    )
+
+
+                                                }
+
+
+                                            >
+
+
+                                                Quản lý lớp
+
+
+
+                                            </button>
+
+
+
+
+                                        </div>
+
+
+
+
+
+
+                                    </div>
+
+
+
+
 
                                 </div>
 
+
+
+                            ))
+
+
+
+                            :
+
+
+
+                            <div className="text-center text-muted">
+
+
+                                Chưa có lớp học
+
+
                             </div>
 
-                        ))
-                    )
-            }
+
+                    }
+
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
 
         </div>
 
+
+
     );
 
+
 }
+
+
 
 export default DashboardTeacher;

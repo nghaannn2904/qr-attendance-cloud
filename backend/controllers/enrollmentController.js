@@ -4,18 +4,20 @@ const Enrollment = require("../models/enrollmentModel");
 exports.addStudents = (req, res) => {
 
     const classId = req.params.classId;
-    const { student_ids } = req.body;
+    const { student_id } = req.body;
 
-    if (!student_ids || !Array.isArray(student_ids)) {
+    if (!student_id) {
+
         return res.status(400).json({
             success: false,
-            message: "student_ids phải là một mảng."
+            message: "Thiếu student_id"
         });
+
     }
 
-    Enrollment.addStudentsToClass(
+    Enrollment.addStudentToClass(
         classId,
-        student_ids,
+        student_id,
         (err, result) => {
 
             if (err) {

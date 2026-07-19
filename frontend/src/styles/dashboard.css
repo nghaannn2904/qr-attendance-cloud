@@ -1,0 +1,216 @@
+.dashboard-page{
+
+    min-height:100vh;
+
+    background:#f5f7fb;
+
+}
+
+
+
+.dashboard-navbar{
+
+    background:white;
+
+    padding:15px 25px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+
+}
+
+
+
+
+.teacher-avatar{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    background:#0d6efd;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:bold;
+
+}
+
+
+
+/* =====================
+   CLASS CARD
+===================== */
+
+
+.class-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    height:190px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+
+    transition:0.3s;
+
+}
+
+
+
+.class-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+
+
+/* ICON + TÊN MÔN */
+
+
+.class-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+
+
+
+.class-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:16px;
+
+    background:#eaf2ff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+
+.class-icon i{
+
+    font-size:32px;
+
+    color:#2563eb;
+
+}
+
+
+
+
+
+.class-top h3{
+
+    margin:0;
+
+    font-size:25px;
+
+    font-weight:800;
+
+    text-transform:uppercase;
+
+    color:#1e3a8a;
+
+}
+
+
+
+
+
+
+/* MÃ LỚP + BUTTON */
+
+
+.class-bottom{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    width:100%;
+
+    margin-top:5px;
+
+}
+
+
+
+
+
+.class-code{
+
+    font-size:19px;
+
+    font-weight:700;
+
+    color:#475569;
+
+}
+
+
+
+
+
+.btn-class{
+
+    padding:12px 28px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+
+}
+
+
+
+.btn-class:hover{
+
+    background:#1d4ed8;
+
+}
