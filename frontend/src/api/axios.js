@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://der-headset-polished-talked.trycloudflare.com/api",
+    baseURL: "http://54.255.218.237:3000/api" ,
     timeout: 10000,
 });
 api.interceptors.response.use(
