@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-baseURL: "https://findlaw-democracy-budget-contained.trycloudflare.com/api",    timeout: 10000,
+  baseURL: "https://adrian-replace-mic-rail.trycloudflare.com/api",
+  timeout: 10000,
 });
 api.interceptors.response.use(
 
